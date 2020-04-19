@@ -33,8 +33,8 @@ class BuildPropertyShowcase extends StatelessWidget {
                 tag: property.imageUrl ?? "",
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12.0),
-                  child: Image(
-                    image: AssetImage(property.imageUrl ?? ""),
+                  child: Image.network(
+                    property.imageUrl,
                     fit: BoxFit.cover,
                   ),
                 ),

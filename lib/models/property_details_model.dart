@@ -1,11 +1,45 @@
-import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/material.dart';
 
-class Features {
+class Details {
+  String $key;
+  int zipCode;
+  String address;
+  bool isOwner = true;
+  String owner;
   String description;
+  String kitchen;
+  String bedrooms;
+  String parking;
+  String bathrooms;
+  String phoneNumber;
   List<String> imagesUrls;
   List<Equipment> equipment;
-  Features({this.description, this.equipment, this.imagesUrls});
+  Details(
+      {this.address,
+      this.$key,
+      this.phoneNumber,
+      this.kitchen,
+      this.bathrooms,
+      this.bedrooms,
+      this.parking,
+      this.description,
+      this.equipment,
+      this.imagesUrls,
+      this.isOwner,
+      this.owner,
+      this.zipCode});
+}
+
+class Equipment {
+  String type;
+  int number;
+  IconData icon;
+  Equipment({this.number, this.icon, this.type});
+
+  void setNumber(int number) {
+    this.number = number;
+  }
 }
 
 class BedRoom extends Equipment {
@@ -42,15 +76,4 @@ class Parking extends Equipment {
           icon: FontAwesomeIcons.parking,
           type: "Parking",
         );
-}
-
-class Equipment {
-  String type;
-  int number;
-  IconData icon;
-  Equipment({this.number, this.icon, this.type});
-
-  void setNumber(int number) {
-    this.number = number;
-  }
 }

@@ -15,9 +15,15 @@ dependencies:
   font_awesome_flutter: ^8.7.0
   page_view_indicator: ^2.0.2
   sliding_up_panel: ^0.3.6
+  flutter_spinkit: ^4.1.1+1
 
   #logic
   image_picker: ^0.6.4
+  firebase_database: ^3.1.1
+  firebase_auth: ^0.15.3
+  firebase_storage: ^3.1.5
+  flutter_bloc: ^3.2.0
+  equatable: ^1.1.0
 
 dev_dependencies:
   flutter_test:

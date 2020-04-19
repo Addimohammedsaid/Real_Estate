@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:real_estate/models/property_model.dart';
-import 'package:real_estate/services/database_service.dart';
 import 'package:real_estate/utils/constant.dart';
 
 double _value = 500.0;
@@ -8,6 +7,8 @@ double _value = 500.0;
 List<String> _filterRooms = ["Any", "1", "2", "3+"];
 
 int _currentFilterRoom = 1;
+
+List<Property> properties;
 
 List<Property> filteredProperties = List();
 

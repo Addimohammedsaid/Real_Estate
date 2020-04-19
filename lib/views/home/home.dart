@@ -23,14 +23,41 @@ class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  void initState() {
-    super.initState();
-    setState(() {
-      filteredProperties = properties;
-    });
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: SafeArea(
+            child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Column(
+        children: <Widget>[
+          _buildUserInfo(),
+          _buildSearchBar(),
+          // filteredProperties.length != properties.length
+          //     ? _buildSearchPage()
+          //     : Container(),
+          SizedBox(
+            height: 20.0,
+          ),
+          Expanded(
+            child: StreamBuilder(
+                stream: DatabaseService().propertyList,
+                initialData: [],
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Property property = snapshot.data[index];
+                        return BuildPropertyShowcase(property);
+                      });
+                }),
+          ),
+        ],
+      ),
+    )));
   }
 
-  Widget _buildHeader() {
+  Widget _buildUserInfo() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
       child: Column(
@@ -100,14 +127,14 @@ class _HomeState extends State<Home> {
               onChanged: (string) {
                 _debouncer.run(() {
                   setState(() {
-                    filteredProperties = properties
-                        .where((u) => (u.city
-                                .toLowerCase()
-                                .contains(string.toLowerCase()) ||
-                            u.name
-                                .toLowerCase()
-                                .contains(string.toLowerCase())))
-                        .toList();
+                    // filteredProperties = properties
+                    //     .where((u) => (u.city
+                    //             .toLowerCase()
+                    //             .contains(string.toLowerCase()) ||
+                    //         u.name
+                    //             .toLowerCase()
+                    //             .contains(string.toLowerCase())))
+                    //     .toList();
                   });
                 });
               },
@@ -143,35 +170,5 @@ class _HomeState extends State<Home> {
         ),
       ],
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Column(
-        children: <Widget>[
-          _buildHeader(),
-          _buildSearchBar(),
-          filteredProperties.length != properties.length
-              ? _buildSearchPage()
-              : Container(),
-          SizedBox(
-            height: 20.0,
-          ),
-          Expanded(
-            child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: filteredProperties.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Property property = filteredProperties[index];
-                  return BuildPropertyShowcase(property);
-                }),
-          ),
-        ],
-      ),
-    )));
   }
 }

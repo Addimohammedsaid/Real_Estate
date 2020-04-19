@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         "/wrapper": (BuildContext context) => new Wrapper(),
         "/signIn": (BuildContext context) => new SignIn(),
         "/home": (BuildContext context) => new Home(),
-        "/details": (BuildContext context) => new Details(),
+        "/details": (BuildContext context) => new DetailsView(),
       },
       home: OnBoardingScreen(),
     );

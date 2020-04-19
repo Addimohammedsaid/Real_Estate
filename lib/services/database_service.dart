@@ -1,62 +1,102 @@
-import 'package:real_estate/models/owner_model.dart';
-import 'package:real_estate/models/property_features_model.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:real_estate/models/property_details_model.dart';
 import 'package:real_estate/models/property_model.dart';
 
-class DatabaseService {}
+class DatabaseService {
+  final String uid;
 
-Features featureCopy = Features(
-    description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    equipment: [
-      BedRoom(number: 4),
-      BathRoom(number: 4),
-      Kitchen(number: 4),
-      Parking(number: 4),
-    ],
-    imagesUrls: [
-      "assets/img/home_int_1.jpg",
-      "assets/img/home_int_2.jpg",
-      "assets/img/home_int_3.jpg"
-    ]);
+  DatabaseService({this.uid});
 
-final List<Property> properties = [
-  Property(
-    name: "Clinton Villa",
-    city: "Los Angeles",
-    area: 2456.0,
-    price: 3500,
-    review: 4.4,
-    rooms: 5,
-    owner: Owner(imageUrl: "assets/img/p2.jpg", name: "James Miner"),
-    purpose: "SALE",
-    imageUrl: "assets/img/home_ext_1.jpg",
-    feature: featureCopy,
-  ),
-  Property(
-    name: "Hilton House",
-    city: "California",
-    area: 2100.0,
-    price: 3100,
-    review: 4.1,
-    rooms: 2,
-    owner: Owner(imageUrl: "assets/img/p2.jpg", name: "James Miner"),
-    purpose: "RENT",
-    imageUrl: "assets/img/home_ext_2.jpg",
-    feature: featureCopy,
-  ),
-  Property(
-    name: "Ibe House",
-    city: "Florida",
-    area: 4100.0,
-    price: 4500,
-    review: 4.5,
-    rooms: 1,
-    owner: Owner(
-      imageUrl: "assets/img/p2.jpg",
-      name: "James Miner",
-    ),
-    purpose: "SALE",
-    imageUrl: "assets/img/home_ext_3.jpg",
-    feature: featureCopy,
-  ),
-];
+  // Realtime database reference
+  final databaseRealtime = FirebaseDatabase.instance.reference();
+
+  // Properties Reference
+  final databaseRealtimeProperties =
+      FirebaseDatabase.instance.reference().child("properties");
+
+  // Properties Reference
+  final databaseRealtimeDetails =
+      FirebaseDatabase.instance.reference().child("details");
+
+  Future addNewProperty(Property property, Details details) async {
+    final key = DateTime.now().millisecondsSinceEpoch.toString();
+    try {
+      await databaseRealtimeProperties.child(key).set({
+        "key": key,
+        "name": property.name,
+        "type": property.type ?? " ",
+        "city": property.city,
+        "area": property.area,
+        "price": property.price,
+        "imageUrl": property.imageUrl ?? " ",
+        "reviews": property.review ?? 0,
+        "purpose": property.purpose ?? "SALE",
+      });
+      await databaseRealtimeDetails.child(key).set({
+        "key": key,
+        "uid": this.uid,
+        "address": details.address,
+        "isOwner": details.isOwner,
+        "description": details.description,
+        "bathrooms": details.bathrooms,
+        "bedrooms": details.bedrooms,
+        "kitchen": details.kitchen,
+        "parking": details.parking,
+        "zipCode": details.zipCode,
+      });
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  // Get list Property data stream
+  Stream<List<Property>> get propertyList {
+    return databaseRealtimeProperties.limitToFirst(10).onValue.map((e) {
+      return _propertiesListFromSnapshot(e.snapshot);
+    });
+  }
+
+  // get list Property from map
+  List<Property> _propertiesListFromSnapshot(DataSnapshot snapshot) {
+    List<Property> list = [];
+    var data = snapshot.value;
+    for (var k in data.keys) {
+      list.add(Property(
+        $key: k,
+        name: data[k]['name'] ?? " ",
+        area: data[k]['area'],
+        city: data[k]['city'],
+        imageUrl: data[k]['imageUrl'],
+        review: data[k]['review'],
+        price: data[k]['price'],
+        purpose: data[k]['purpose'],
+      ));
+    }
+    return list;
+  }
+
+  // Get Property Details
+  Stream<Details> propertyDetails(String key) {
+    return databaseRealtimeDetails.child(key).onValue.map((e) {
+      return _propertyDetailsFromSnapshot(e.snapshot);
+    });
+  }
+
+  // get Property details from map
+  Details _propertyDetailsFromSnapshot(DataSnapshot snapshot) {
+    var data = snapshot.value;
+    return Details(
+        $key: snapshot.key,
+        address: data["address"],
+        isOwner: data["isOwner"],
+        owner: data['owner'],
+        bathrooms: data['bathrooms'],
+        kitchen: data['kitchen'],
+        bedrooms: data['bedrooms'],
+        parking: data['parking'],
+        description: data['description'],
+        zipCode: data['zipCode'],
+        phoneNumber: data['phoneNumber']);
+  }
+}

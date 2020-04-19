@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:real_estate/models/property_details_model.dart';
 import 'package:real_estate/models/property_model.dart';
+import 'package:real_estate/models/user_model.dart';
 import 'package:real_estate/services/user_service.dart';
 import 'package:real_estate/utils/constant.dart';
 
-class Details extends StatefulWidget {
+class DetailsView extends StatefulWidget {
   @override
-  _DetailsState createState() => _DetailsState();
+  _DetailsViewState createState() => _DetailsViewState();
 }
 
-class _DetailsState extends State<Details> {
+class _DetailsViewState extends State<DetailsView> {
   @override
   Widget build(BuildContext context) {
     Property property = ModalRoute.of(context).settings.arguments as Property;
+
+    Details propertyDetails;
+    User owner;
+
     Color favoriteColor =
         user.favorite.contains(property) ? Colors.redAccent : ksecondary;
 
@@ -20,9 +26,9 @@ class _DetailsState extends State<Details> {
         heightFactor: 0.52,
         widthFactor: 1.0,
         child: Hero(
-          tag: property.imageUrl,
-          child: Image.asset(
-            property.imageUrl,
+          tag: property.imageUrl ?? "",
+          child: Image.network(
+            property.imageUrl ?? "",
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
           ),
@@ -207,7 +213,7 @@ class _DetailsState extends State<Details> {
                 height: 50.0,
                 child: CircleAvatar(
                   radius: 20.0,
-                  backgroundImage: AssetImage(property.owner.imageUrl),
+                  //backgroundImage: AssetImage(property.owner.imageUrl) ?? "",
                 ),
               ),
               SizedBox(
@@ -217,7 +223,7 @@ class _DetailsState extends State<Details> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    property.owner.name,
+                    owner.name,
                     style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.grey[800],
@@ -272,7 +278,7 @@ class _DetailsState extends State<Details> {
     _buildInfoIcons() {
       return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: property.feature.equipment
+          children: propertyDetails.equipment
               .asMap()
               .entries
               .map(
@@ -285,14 +291,14 @@ class _DetailsState extends State<Details> {
                           color: Colors.grey[200],
                         ),
                         child: Icon(
-                          property.feature.equipment[map.key].icon,
+                          propertyDetails.equipment[map.key].icon,
                           color: Colors.black87,
                         )),
                     SizedBox(
                       height: 5.0,
                     ),
                     Text(
-                      "${property.feature.equipment[map.key].number} ${property.feature.equipment[map.key].type}",
+                      "${propertyDetails.equipment[map.key].number} ${propertyDetails.equipment[map.key].type}",
                       style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 12.0,
@@ -371,7 +377,7 @@ class _DetailsState extends State<Details> {
                           height: 10,
                         ),
                         Text(
-                          property.feature.description,
+                          propertyDetails.description,
                           style: TextStyle(
                               fontSize: 14.0,
                               color: Colors.grey[400],
@@ -394,10 +400,10 @@ class _DetailsState extends State<Details> {
                           height: 200.0,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: property.feature.imagesUrls.length,
+                            itemCount: propertyDetails.imagesUrls.length,
                             itemBuilder: (BuildContext context, int index) {
                               String imageUrl =
-                                  property.feature.imagesUrls[index];
+                                  propertyDetails.imagesUrls[index];
                               return _buildImageSlideShow(imageUrl);
                             },
                           ),
